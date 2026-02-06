@@ -68,12 +68,13 @@ public class ArmorPage extends Page {
             gui.disableAllInteractions();
         } else {
             EQUIPMENT_SLOTS.forEach(slot -> gui.setItem(slot, ItemBuilder.from(Material.AIR).asGuiItem()));
-            Bukkit.getScheduler().runTask(ArmorStandEditor.getInstance(), () -> {
+            EQUIPMENT_CACHE.put(armorStand, equipmentItems);
+            Bukkit.getScheduler().runTaskLater(ArmorStandEditor.getInstance(), () -> {
                 Inventory inv = gui.getInventory();
                 for (int i = 0; i < EQUIPMENT_SLOTS.size(); i++)
                     inv.setItem(EQUIPMENT_SLOTS.get(i), equipmentItems[i]);
                 status.saveEquipment = true;
-            });
+            }, 2L);
 
             gui.setDragAction(event -> {
                 if (!status.saveEquipment) {

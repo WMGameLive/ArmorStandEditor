@@ -64,6 +64,7 @@ public class Util {
     public static Map<Long, AnvilGUI> anvilInvs = new HashMap<>();
     public static List<UUID> armorPageCooldowns = new ArrayList<>();
     public static boolean disabling = false;
+    public static Map<ArmorStand, ItemStack[]> EQUIPMENT_CACHE = new HashMap<>();
 
     public static void onDisable() {
         disabling = true;
@@ -401,12 +402,25 @@ public class Util {
     }
 
     public static boolean saveEquipment(ArmorStandStatus status) {
-        if (!status.saveEquipment)
+        ArmorStand armorStand = status.armorStand;
+
+        if (!status.saveEquipment) {
+            if(EQUIPMENT_CACHE.containsKey(armorStand)) {
+                ItemStack[] items = EQUIPMENT_CACHE.get(armorStand);
+                EntityEquipment equipment = armorStand.getEquipment();
+                equipment.setHelmet(items[0]);
+                equipment.setChestplate(items[1]);
+                equipment.setLeggings(items[2]);
+                equipment.setBoots(items[3]);
+                equipment.setItemInMainHand(items[4]);
+                equipment.setItemInOffHand(items[5]);
+                EQUIPMENT_CACHE.remove(armorStand);
+            }
             return false;
+        }
         status.saveEquipment = false;
 
         Player player = status.player;
-        ArmorStand armorStand = status.armorStand;
         Gui gui = status.gui;
 
         Inventory inv = gui.getInventory();
